@@ -15,24 +15,21 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IEEE8021QHEADERSERIALIZER_H
-#define __INET_IEEE8021QHEADERSERIALIZER_H
+#ifndef __INET_ETHERNETCONTROLFRAMESERIALIZER_H
+#define __INET_ETHERNETCONTROLFRAMESERIALIZER_H
 
 #include "inet/common/packet/serializer/FieldsChunkSerializer.h"
 
 namespace inet {
 
-/**
- * Converts between Ieee8021qHeader and binary (network byte order) IEEE 802.1 Q header.
- */
-class INET_API Ieee8021qHeaderSerializer : public FieldsChunkSerializer
+class INET_API EthernetControlFrameSerializer : public FieldsChunkSerializer
 {
   protected:
     virtual void serialize(MemoryOutputStream& stream, const Ptr<const Chunk>& chunk) const override;
     virtual const Ptr<Chunk> deserialize(MemoryInputStream& stream) const override;
 
   public:
-    Ieee8021qHeaderSerializer() : FieldsChunkSerializer() {}
+    EthernetControlFrameSerializer() : FieldsChunkSerializer() {}
 };
 
 } // namespace inet

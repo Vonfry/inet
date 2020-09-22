@@ -18,7 +18,7 @@
 #include "inet/common/IProtocolRegistrationListener.h"
 #include "inet/common/ProtocolGroup.h"
 #include "inet/common/ProtocolTag_m.h"
-#include "inet/linklayer/ethernet/EtherFrame_m.h"
+#include "inet/linklayer/ethernet/EthernetMacHeader_m.h"
 #include "inet/linklayer/ethernet/layered/EthernetTypeOrLengthInserter.h"
 
 namespace inet {
@@ -34,7 +34,7 @@ void EthernetTypeOrLengthInserter::initialize(int stage)
 
 void EthernetTypeOrLengthInserter::processPacket(Packet *packet)
 {
-    const auto& header = makeShared<Ieee8023TypeOrLength>();
+    const auto& header = makeShared<EthernetTypeOrLengthField>();
     auto protocol = packet->getTag<PacketProtocolTag>()->getProtocol();
     if (protocol == &Protocol::ieee8022)
         header->setTypeOrLength(packet->getByteLength());

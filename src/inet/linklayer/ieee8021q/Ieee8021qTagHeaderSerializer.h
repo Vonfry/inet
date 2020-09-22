@@ -15,37 +15,51 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_ETHERNETHEADERSERIALIZER_H
-#define __INET_ETHERNETHEADERSERIALIZER_H
+#ifndef __INET_IEEE8021QTAGHEADERSERIALIZER_H
+#define __INET_IEEE8021QTAGHEADERSERIALIZER_H
 
 #include "inet/common/packet/serializer/FieldsChunkSerializer.h"
 
 namespace inet {
 
-/**
- * Converts between Ieee8023MacAddresses and binary (network byte order) 802.3 MAC addresses header.
- */
-class INET_API Ieee8023MacAddressesSerializer : public FieldsChunkSerializer
+class INET_API Ieee8021qTagHeaderSerializer : public FieldsChunkSerializer
 {
   protected:
     virtual void serialize(MemoryOutputStream& stream, const Ptr<const Chunk>& chunk) const override;
     virtual const Ptr<Chunk> deserialize(MemoryInputStream& stream) const override;
 
   public:
-    Ieee8023MacAddressesSerializer() : FieldsChunkSerializer() {}
+    Ieee8021qTagHeaderSerializer() : FieldsChunkSerializer() {}
 };
 
-/**
- * Converts between Ieee8023TypeOrLength and binary (network byte order) 802.3 MAC type or length header.
- */
-class INET_API Ieee8023TypeOrLengthSerializer : public FieldsChunkSerializer
+class INET_API ShiftedIeee8021qTagHeaderSerializer : public FieldsChunkSerializer
 {
   protected:
     virtual void serialize(MemoryOutputStream& stream, const Ptr<const Chunk>& chunk) const override;
     virtual const Ptr<Chunk> deserialize(MemoryInputStream& stream) const override;
 
   public:
-    Ieee8023TypeOrLengthSerializer() : FieldsChunkSerializer() {}
+    ShiftedIeee8021qTagHeaderSerializer() : FieldsChunkSerializer() {}
+};
+
+class INET_API Ieee8021qTagHeaderTpidFieldSerializer : public FieldsChunkSerializer
+{
+  protected:
+    virtual void serialize(MemoryOutputStream& stream, const Ptr<const Chunk>& chunk) const override;
+    virtual const Ptr<Chunk> deserialize(MemoryInputStream& stream) const override;
+
+  public:
+    Ieee8021qTagHeaderTpidFieldSerializer() : FieldsChunkSerializer() {}
+};
+
+class INET_API Ieee8021qTagHeaderTciFieldSerializer : public FieldsChunkSerializer
+{
+  protected:
+    virtual void serialize(MemoryOutputStream& stream, const Ptr<const Chunk>& chunk) const override;
+    virtual const Ptr<Chunk> deserialize(MemoryInputStream& stream) const override;
+
+  public:
+    Ieee8021qTagHeaderTciFieldSerializer() : FieldsChunkSerializer() {}
 };
 
 } // namespace inet

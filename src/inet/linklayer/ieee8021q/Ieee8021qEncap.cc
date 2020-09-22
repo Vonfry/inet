@@ -21,11 +21,11 @@
 #include "inet/common/packet/Packet.h"
 #include "inet/linklayer/common/VlanTag_m.h"
 #include "inet/linklayer/ethernet/EtherEncap.h"
-#include "inet/linklayer/ethernet/EtherFrame_m.h"
 #include "inet/linklayer/ieee8021q/Ieee8021qEncap.h"
 
 namespace inet {
 
+/*
 Define_Module(Ieee8021qEncap);
 
 void Ieee8021qEncap::initialize(int stage)
@@ -55,7 +55,7 @@ void Ieee8021qEncap::parseParameters(const char *filterParameterName, const char
     }
 }
 
-Ieee8021qHeader *Ieee8021qEncap::findVlanTag(const Ptr<EthernetMacHeader>& ethernetMacHeader)
+Ieee8021qTagHeader *Ieee8021qEncap::findVlanTag(const Ptr<EthernetMacHeader>& ethernetMacHeader)
 {
     if (*vlanTagType == 'c')
         return ethernetMacHeader->getCTagForUpdate();
@@ -65,9 +65,9 @@ Ieee8021qHeader *Ieee8021qEncap::findVlanTag(const Ptr<EthernetMacHeader>& ether
         throw cRuntimeError("Unknown VLAN tag type");
 }
 
-Ieee8021qHeader *Ieee8021qEncap::addVlanTag(const Ptr<EthernetMacHeader>& ethernetMacHeader)
+Ieee8021qTagHeader *Ieee8021qEncap::addVlanTag(const Ptr<EthernetMacHeader>& ethernetMacHeader)
 {
-    auto vlanTag = new Ieee8021qHeader();
+    auto vlanTag = new Ieee8021qTagHeader();
     ethernetMacHeader->addChunkLength(B(4));
     if (*vlanTagType == 'c')
         ethernetMacHeader->setCTag(vlanTag);
@@ -78,7 +78,7 @@ Ieee8021qHeader *Ieee8021qEncap::addVlanTag(const Ptr<EthernetMacHeader>& ethern
     return vlanTag;
 }
 
-Ieee8021qHeader *Ieee8021qEncap::removeVlanTag(const Ptr<EthernetMacHeader>& ethernetMacHeader)
+Ieee8021qTagHeader *Ieee8021qEncap::removeVlanTag(const Ptr<EthernetMacHeader>& ethernetMacHeader)
 {
     ethernetMacHeader->addChunkLength(B(-4));
     if (*vlanTagType == 'c')
@@ -93,7 +93,7 @@ void Ieee8021qEncap::processPacket(Packet *packet, std::vector<int>& vlanIdFilte
 {
     packet->trimFront();
     const auto& ethernetMacHeader = packet->removeAtFront<EthernetMacHeader>();
-    Ieee8021qHeader *vlanTag = findVlanTag(ethernetMacHeader);
+    Ieee8021qTagHeader *vlanTag = findVlanTag(ethernetMacHeader);
     auto oldVlanId = vlanTag != nullptr ? vlanTag->getVid() : -1;
     auto vlanReq = packet->removeTagIfPresent<VlanReq>();
     auto newVlanId = vlanReq != nullptr ? vlanReq->getVlanId() : oldVlanId;
@@ -135,6 +135,7 @@ void Ieee8021qEncap::handleMessage(cMessage *message)
     else
         throw cRuntimeError("Unknown message");
 }
+*/
 
 } // namespace inet
 

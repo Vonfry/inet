@@ -17,10 +17,11 @@
 
 #include "inet/common/ProtocolGroup.h"
 #include "inet/common/ProtocolTag_m.h"
+#include "inet/linklayer/common/EtherType_m.h"
 #include "inet/linklayer/common/InterfaceTag_m.h"
-#include "inet/linklayer/ethernet/EtherFrame_m.h"
-#include "inet/networklayer/common/NetworkInterface.h"
+#include "inet/linklayer/ethernet/EthernetMacHeader_m.h"
 #include "inet/linklayer/ethernet/layered/EthernetTypeOrLengthChecker.h"
+#include "inet/networklayer/common/NetworkInterface.h"
 
 namespace inet {
 
@@ -28,7 +29,7 @@ Define_Module(EthernetTypeOrLengthChecker);
 
 void EthernetTypeOrLengthChecker::processPacket(Packet *packet)
 {
-    const auto& header = packet->popAtFront<Ieee8023TypeOrLength>();
+    const auto& header = packet->popAtFront<EthernetTypeOrLengthField>();
     auto typeOrLength = header->getTypeOrLength();
     const Protocol *protocol;
     if (isIeee8023Length(typeOrLength))
@@ -44,7 +45,7 @@ void EthernetTypeOrLengthChecker::processPacket(Packet *packet)
 
 bool EthernetTypeOrLengthChecker::matchesPacket(const Packet *packet) const
 {
-    const auto& header = packet->peekAtFront<Ieee8023TypeOrLength>();
+    const auto& header = packet->peekAtFront<EthernetTypeOrLengthField>();
     auto typeOrLength = header->getTypeOrLength();
     if (isIeee8023Length(typeOrLength))
         return true;

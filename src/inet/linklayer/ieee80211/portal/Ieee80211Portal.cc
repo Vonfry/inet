@@ -15,8 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
-#include "inet/common/INETDefs.h"
 #include "inet/common/ProtocolTag_m.h"
+#include "inet/linklayer/common/EtherType_m.h"
 #include "inet/linklayer/common/FcsMode_m.h"
 #include "inet/linklayer/common/MacAddressTag_m.h"
 
@@ -71,10 +71,10 @@ void Ieee80211Portal::encapsulate(Packet *packet)
     packet->trim();
     packet->addTagIfAbsent<MacAddressReq>()->setDestAddress(ethernetHeader->getDest());
     packet->addTagIfAbsent<MacAddressReq>()->setSrcAddress(ethernetHeader->getSrc());
-    if (isIeee8023Header(*ethernetHeader))
+    if (isIeee8023Length(ethernetHeader->getTypeOrLength()))
         // check that the packet already has an LLC header
         packet->peekAtFront<Ieee8022LlcHeader>();
-    else if (isEth2Header(*ethernetHeader)){
+    else if (isEth2Type(ethernetHeader->getTypeOrLength())){
         const auto& ieee8022SnapHeader = makeShared<Ieee8022LlcSnapHeader>();
         ieee8022SnapHeader->setOui(0);
         ieee8022SnapHeader->setProtocolId(ethernetHeader->getTypeOrLength());
@@ -109,7 +109,9 @@ void Ieee80211Portal::decapsulate(Packet *packet)
     ethernetHeader->setDest(packet->getTag<MacAddressInd>()->getDestAddress());
     ethernetHeader->setTypeOrLength(typeOrLength);
     packet->insertAtFront(ethernetHeader);
-    packet->insertAtBack(makeShared<EthernetFcs>(fcsMode));
+    const auto& ethernetFcs = makeShared<EthernetFcs>();
+    ethernetFcs->setFcsMode(fcsMode);
+    packet->insertAtBack(ethernetFcs);
     packet->addTagIfAbsent<DispatchProtocolReq>()->setProtocol(&Protocol::ethernetMac);
     packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetMac);
 #else // ifdef WITH_ETHERNET

@@ -92,7 +92,7 @@ const Protocol Protocol::gpsr("gpsr", "GPSR");
 const Protocol Protocol::http("http", "HTTP");
 const Protocol Protocol::icmpv4("icmpv4", "ICMPv4", Protocol::NetworkLayer);
 const Protocol Protocol::icmpv6("icmpv6", "ICMPv6", Protocol::NetworkLayer);
-const Protocol Protocol::ieee80211EtherType("ieee80211ethertype", "IEEE 802.11 LLC (EtherType)", Protocol::LinkLayer);
+const Protocol Protocol::ieee802epd("ieee802epd", "IEEE 802.11 EPD", Protocol::LinkLayer);
 const Protocol Protocol::ieee80211Mac("ieee80211mac", "IEEE 802.11 MAC", Protocol::LinkLayer);
 const Protocol Protocol::ieee80211Mgmt("ieee80211mgmt", "IEEE 802.11 MGMT", Protocol::LinkLayer);
 const Protocol Protocol::ieee80211FhssPhy("ieee80211fhssphy", "IEEE 802.11 FHSS PHY", Protocol::PhysicalLayer);

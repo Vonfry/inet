@@ -16,26 +16,19 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 
-#ifndef __INET_IEEE80211ETHERTYPEHEADERSERIALIZER_H
-#define __INET_IEEE80211ETHERTYPEHEADERSERIALIZER_H
+import inet.common.INETDefs;
+import inet.common.packet.chunk.Chunk;
 
-#include "inet/common/packet/serializer/FieldsChunkSerializer.h"
+namespace inet;
 
-namespace inet {
-namespace ieee80211 {
-
-class INET_API Ieee80211EtherTypeHeaderSerializer : public FieldsChunkSerializer
+//
+// This class represents an IEEE 802 EtherType Protocol Discrimination (EPD)
+// header as defined in the section 9.2 EtherTypes of the IEEE Std 802-2014,
+// IEEE Standard for Local and Metropolitan Area Networks: Overview and
+// Architecture.
+//
+class Ieee802EpdHeader extends FieldsChunk
 {
-  protected:
-    virtual void serialize(MemoryOutputStream& stream, const Ptr<const Chunk>& chunk) const override;
-    virtual const Ptr<Chunk> deserialize(MemoryInputStream& stream) const override;
-
-  public:
-    Ieee80211EtherTypeHeaderSerializer() : FieldsChunkSerializer() {}
-};
-
-} // namespace ieee80211
-} // namespace inet
-
-#endif
-
+    chunkLength = B(2);
+    uint16_t etherType; // protocol identification values are assigned by the IEEE RA 19 and are used to identify the protocol that is to be invoked to process the user data in the frame.
+}

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2003 Andras Varga; CTIE, Monash University, Australia
+// Copyright (C) 2018 Raphael Riebl, TH Ingolstadt
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public License
@@ -16,19 +16,19 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 
-import inet.common.INETDefs;
-import inet.common.packet.chunk.Chunk;
-import inet.linklayer.ethernet.Ieee8023TypeOrLength;
+#ifndef __INET_IEEE802EPDPROTOCOLDISSECTOR_H
+#define __INET_IEEE802EPDPROTOCOLDISSECTOR_H
 
-namespace inet;
+#include "inet/common/packet/dissector/ProtocolDissector.h"
 
-class Ieee8021AeHeader extends Ieee8023TypeOrLength
+namespace inet {
+
+class INET_API Ieee802EpdProtocolDissector : public ProtocolDissector
 {
-    chunkLength = B(8);     // Length without SCI. Set it to B(16) when hasSci is true.
-    typeOrLength = 0x88e5;
-    uint8_t tciAn;          // @bit(8);
-    uint8_t sl;             // @byte(1);
-    uint32_t packetNumber;  // @byte(4);
-    bool hasSci = false;    // @bit(0); TODO ????
-    uint64_t sci;           // @byte(8); //TODO optional field
-}
+  public:
+    virtual void dissect(Packet *packet, const Protocol *protocol, ICallback& callback) const override;
+};
+
+} // namespace inet
+
+#endif

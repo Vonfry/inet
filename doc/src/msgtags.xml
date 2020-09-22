@@ -873,8 +873,8 @@
     <filename>src-inet-physicallayer-ieee80211-packetlevel-Ieee80211ErpOfdmPhyPreamble.html</filename>
   </compound>
   <compound kind="class">
-    <name>Ieee80211EtherTypeHeader</name>
-    <filename>src-inet-linklayer-ieee80211-llc-Ieee80211EtherTypeHeader.html</filename>
+    <name>Ieee802EpdHeader</name>
+    <filename>src-inet-linklayer-ieee80211-llc-Ieee802EpdHeader.html</filename>
   </compound>
   <compound kind="class">
     <name>Ieee80211FhssPhyHeader</name>
@@ -1121,8 +1121,8 @@
     <filename>src-inet-linklayer-ieee802154-Ieee802154MacHeader.html</filename>
   </compound>
   <compound kind="class">
-    <name>Ieee8021qHeader</name>
-    <filename>src-inet-linklayer-ieee8021q-Ieee8021qHeader.html</filename>
+    <name>Ieee8021qTagHeader</name>
+    <filename>src-inet-linklayer-ieee8021q-Ieee8021qTagHeader.html</filename>
   </compound>
   <compound kind="class">
     <name>Ieee8022LlcHeader</name>

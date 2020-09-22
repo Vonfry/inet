@@ -22,6 +22,7 @@
 #include "inet/common/ModuleAccess.h"
 #include "inet/common/ProtocolTag_m.h"
 #include "inet/common/checksum/EthernetCRC.h"
+#include "inet/linklayer/common/EtherType_m.h"
 #include "inet/linklayer/common/FcsMode_m.h"
 #include "inet/linklayer/common/Ieee802Ctrl.h"
 #include "inet/linklayer/common/Ieee802SapTag_m.h"
@@ -29,8 +30,9 @@
 #include "inet/linklayer/common/MacAddressTag_m.h"
 #include "inet/linklayer/common/VlanTag_m.h"
 #include "inet/linklayer/ethernet/EtherEncap.h"
-#include "inet/linklayer/ethernet/EtherFrame_m.h"
 #include "inet/linklayer/ethernet/EthernetCommand_m.h"
+#include "inet/linklayer/ethernet/EthernetControlFrame_m.h"
+#include "inet/linklayer/ethernet/EthernetMacHeader_m.h"
 #include "inet/linklayer/ieee8022/Ieee8022LlcHeader_m.h"
 #include "inet/networklayer/contract/IInterfaceTable.h"
 
@@ -171,9 +173,9 @@ void EtherEncap::processPacketFromHigherLayer(Packet *packet)
     ethHeader->setDest(macAddressReq->getDestAddress());
     ethHeader->setTypeOrLength(typeOrLength);
     packet->insertAtFront(ethHeader);
-
-    packet->insertAtBack(makeShared<EthernetFcs>(fcsMode));
-
+    const auto& ethernetFcs = makeShared<EthernetFcs>();
+    ethernetFcs->setFcsMode(fcsMode);
+    packet->insertAtBack(ethernetFcs);
     packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetMac);
     EV_INFO << "Sending " << packet << " to lower layer.\n";
     send(packet, "lowerLayerOut");
@@ -190,14 +192,14 @@ const Ptr<const EthernetMacHeader> EtherEncap::decapsulateMacHeader(Packet *pack
     macAddressInd->setDestAddress(ethHeader->getDest());
 
     // remove Padding if possible
-    if (isIeee8023Header(*ethHeader)) {
+    if (isIeee8023Length(ethHeader->getTypeOrLength())) {
         b payloadLength = B(ethHeader->getTypeOrLength());
         if (packet->getDataLength() < payloadLength)
             throw cRuntimeError("incorrect payload length in ethernet frame");
         packet->setBackOffset(packet->getFrontOffset() + payloadLength);
         packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ieee8022);
     }
-    else if (isEth2Header(*ethHeader)) {
+    else if (isEth2Type(ethHeader->getTypeOrLength())) {
         if (auto protocol = ProtocolGroup::ethertype.findProtocol(ethHeader->getTypeOrLength()))
             packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(protocol);
         else
@@ -212,11 +214,11 @@ void EtherEncap::processPacketFromMac(Packet *packet)
     auto ethHeader = decapsulateMacHeader(packet);
 
     // remove llc header if possible
-    if (isIeee8023Header(*ethHeader)) {
+    if (isIeee8023Length(ethHeader->getTypeOrLength())) {
         Ieee8022Llc::processPacketFromMac(packet);
         return;
     }
-    else if (isEth2Header(*ethHeader)) {
+    else if (isEth2Type(ethHeader->getTypeOrLength())) {
         payloadProtocol = ProtocolGroup::ethertype.findProtocol(ethHeader->getTypeOrLength());
         if (payloadProtocol != nullptr) {
             packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(payloadProtocol);
@@ -287,7 +289,9 @@ void EtherEncap::handleSendPause(cMessage *msg)
     packet->insertAtFront(frame);
     hdr->setTypeOrLength(ETHERTYPE_FLOW_CONTROL);
     packet->insertAtFront(hdr);
-    packet->insertAtBack(makeShared<EthernetFcs>(fcsMode));
+    const auto& ethernetFcs = makeShared<EthernetFcs>();
+    ethernetFcs->setFcsMode(fcsMode);
+    packet->insertAtBack(ethernetFcs);
     packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetMac);
 
     EV_INFO << "Sending " << frame << " to lower layer.\n";

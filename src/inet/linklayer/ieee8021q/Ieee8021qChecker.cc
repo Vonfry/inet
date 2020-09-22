@@ -19,7 +19,7 @@
 #include "inet/common/ProtocolTag_m.h"
 #include "inet/linklayer/common/UserPriorityTag_m.h"
 #include "inet/linklayer/common/VlanTag_m.h"
-#include "inet/linklayer/ethernet/EtherFrame_m.h"
+#include "inet/linklayer/ethernet/EthernetMacHeader_m.h"
 #include "inet/linklayer/ieee8021q/Ieee8021qChecker.h"
 
 namespace inet {
@@ -46,11 +46,11 @@ void Ieee8021qChecker::initialize(int stage)
 
 void Ieee8021qChecker::processPacket(Packet *packet)
 {
-    const auto& vlanHeader = packet->popAtFront<Ieee8021qHeader>();
-    packet->addTagIfAbsent<UserPriorityInd>()->setUserPriority(vlanHeader->getPcp());
-    packet->addTagIfAbsent<VlanInd>()->setVlanId(vlanHeader->getVid());
-    auto packetProtocolTag = packet->addTagIfAbsent<PacketProtocolTag>();
-    packetProtocolTag->setFrontOffset(packetProtocolTag->getFrontOffset() - vlanHeader->getChunkLength());
+//    const auto& vlanHeader = packet->popAtFront<Ieee8021qTagHeader>();
+//    packet->addTagIfAbsent<UserPriorityInd>()->setUserPriority(vlanHeader->getPcp());
+//    packet->addTagIfAbsent<VlanInd>()->setVlanId(vlanHeader->getVid());
+//    auto packetProtocolTag = packet->addTagIfAbsent<PacketProtocolTag>();
+//    packetProtocolTag->setFrontOffset(packetProtocolTag->getFrontOffset() - vlanHeader->getChunkLength());
 }
 
 void Ieee8021qChecker::dropPacket(Packet *packet)
@@ -61,9 +61,9 @@ void Ieee8021qChecker::dropPacket(Packet *packet)
 
 bool Ieee8021qChecker::matchesPacket(const Packet *packet) const
 {
-    const auto& header = packet->peekAtFront<Ieee8021qHeader>();
-    auto vlanId = header->getVid();
-    return vlanIdFilter.empty() || std::find(vlanIdFilter.begin(), vlanIdFilter.end(), vlanId) != vlanIdFilter.end();
+//    const auto& header = packet->peekAtFront<Ieee8021qTagHeader>();
+//    auto vlanId = header->getVid();
+//    return vlanIdFilter.empty() || std::find(vlanIdFilter.begin(), vlanIdFilter.end(), vlanId) != vlanIdFilter.end();
 }
 
 } // namespace inet

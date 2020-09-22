@@ -19,7 +19,7 @@
 #include "inet/common/ProtocolTag_m.h"
 #include "inet/linklayer/common/UserPriorityTag_m.h"
 #include "inet/linklayer/common/VlanTag_m.h"
-#include "inet/linklayer/ethernet/EtherFrame_m.h"
+#include "inet/linklayer/ieee8021q/Ieee8021qTagHeader_m.h"
 #include "inet/linklayer/ieee8021q/Ieee8021qInserter.h"
 
 namespace inet {
@@ -42,8 +42,8 @@ void Ieee8021qInserter::initialize(int stage)
 
 void Ieee8021qInserter::processPacket(Packet *packet)
 {
-    auto vlanHeader = makeShared<Ieee8021qHeader>();
-    vlanHeader->setTypeOrLength(etherType);
+    auto vlanHeader = makeShared<Ieee8021qTagHeader>();
+    vlanHeader->setTpid(etherType);
     auto userPriorityReq = packet->removeTagIfPresent<UserPriorityReq>();
     if (userPriorityReq != nullptr) {
         auto userPriority = userPriorityReq->getUserPriority();

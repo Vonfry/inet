@@ -32,12 +32,12 @@ class INET_API Ieee8021qTagger : public PacketFilterBase
     std::map<int, int> vlanIdMap;
 
   protected:
-    virtual void initialize(int stage) override;
-    virtual void processPacket(Packet *packet) override;
-    virtual void dropPacket(Packet *packet) override;
+//    virtual void initialize(int stage) override;
+//    virtual void processPacket(Packet *packet) override;
+//    virtual void dropPacket(Packet *packet) override;
 
   public:
-    virtual bool matchesPacket(const Packet *packet) const override;
+//    virtual bool matchesPacket(const Packet *packet) const override;
 };
 
 } // namespace inet

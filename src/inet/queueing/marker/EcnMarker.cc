@@ -17,11 +17,12 @@
 
 #include "inet/common/ProtocolGroup.h"
 #include "inet/common/ProtocolTag_m.h"
+#include "inet/linklayer/common/EtherType_m.h"
 #include "inet/networklayer/common/L3Tools.h"
 #include "inet/queueing/marker/EcnMarker.h"
 
 #ifdef WITH_ETHERNET
-#include "inet/linklayer/ethernet/EtherFrame_m.h"
+#include "inet/linklayer/ethernet/EthernetMacHeader_m.h"
 #include "inet/linklayer/ethernet/Ethernet.h"
 #endif // #ifdef WITH_ETHERNET
 
@@ -51,7 +52,7 @@ void EcnMarker::setEcn(Packet *packet, IpEcnCode ecn)
         packet->trim();
         auto ethHeader = packet->removeAtFront<EthernetMacHeader>();
         auto ethFcs = packet->removeAtBack<EthernetFcs>(ETHER_FCS_BYTES);
-        if (isEth2Header(*ethHeader)) {
+        if (isEth2Type(ethHeader->getTypeOrLength())) {
             const Protocol *payloadProtocol = ProtocolGroup::ethertype.getProtocol(ethHeader->getTypeOrLength());
 #if defined(WITH_IPv4)
             if (payloadProtocol == &Protocol::ipv4) {
@@ -85,7 +86,7 @@ IpEcnCode EcnMarker::getEcn(const Packet *packet)
     auto protocol = packet->getTag<PacketProtocolTag>()->getProtocol();
     if (protocol == &Protocol::ethernetMac) {
         auto ethHeader = packet->peekAtFront<EthernetMacHeader>();
-        if (isEth2Header(*ethHeader)) {
+        if (isEth2Type(ethHeader->getTypeOrLength())) {
             const Protocol *payloadProtocol = ProtocolGroup::ethertype.getProtocol(ethHeader->getTypeOrLength());
             if (payloadProtocol == &Protocol::ipv4) {
                 auto ipv4Header = packet->peekDataAt<Ipv4Header>(ethHeader->getChunkLength());

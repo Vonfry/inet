@@ -18,7 +18,8 @@
 #ifndef __INET_IEEE8021QENCAP_H
 #define __INET_IEEE8021QENCAP_H
 
-#include "inet/common/INETDefs.h"
+#include "inet/linklayer/ethernet/EthernetMacHeader_m.h"
+#include "inet/linklayer/ieee8021q/Ieee8021qTagHeader_m.h"
 
 namespace inet {
 
@@ -33,14 +34,14 @@ class INET_API Ieee8021qEncap : public cSimpleModule
     std::map<int, int> outboundVlanIdMap;
 
   protected:
-    virtual void initialize(int stage) override;
-    virtual void handleMessage(cMessage *message) override;
-
-    virtual Ieee8021qHeader *findVlanTag(const Ptr<EthernetMacHeader>& ethernetMacHeader);
-    virtual Ieee8021qHeader *addVlanTag(const Ptr<EthernetMacHeader>& ethernetMacHeader);
-    virtual Ieee8021qHeader *removeVlanTag(const Ptr<EthernetMacHeader>& ethernetMacHeader);
-    virtual void parseParameters(const char *filterParameterName, const char *mapParameterName, std::vector<int>& vlanIdFilter, std::map<int, int>& vlanIdMap);
-    virtual void processPacket(Packet *packet, std::vector<int>& vlanIdFilter, std::map<int, int>& vlanIdMap, cGate *gate);
+//    virtual void initialize(int stage) override;
+//    virtual void handleMessage(cMessage *message) override;
+//
+//    virtual Ieee8021qTagHeader *findVlanTag(const Ptr<EthernetMacHeader>& ethernetMacHeader);
+//    virtual Ieee8021qTagHeader *addVlanTag(const Ptr<EthernetMacHeader>& ethernetMacHeader);
+//    virtual Ieee8021qTagHeader *removeVlanTag(const Ptr<EthernetMacHeader>& ethernetMacHeader);
+//    virtual void parseParameters(const char *filterParameterName, const char *mapParameterName, std::vector<int>& vlanIdFilter, std::map<int, int>& vlanIdMap);
+//    virtual void processPacket(Packet *packet, std::vector<int>& vlanIdFilter, std::map<int, int>& vlanIdMap, cGate *gate);
 };
 
 } // namespace inet

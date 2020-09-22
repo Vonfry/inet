@@ -16,7 +16,7 @@ cplusplus {{
 
 static ProtocolGroup llc("llc", {
     { 0, &Protocol::ieee8022 },
-    { 1, &Protocol::ieee80211EtherType }
+    { 1, &Protocol::ieee802epd }
 });
 
 }}

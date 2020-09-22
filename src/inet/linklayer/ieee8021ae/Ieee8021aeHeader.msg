@@ -21,8 +21,13 @@ import inet.common.packet.chunk.Chunk;
 
 namespace inet;
 
-class Ieee8023TypeOrLength extends FieldsChunk
+class Ieee8021AeHeader extends FieldsChunk
 {
-    chunkLength = B(2);
-    int typeOrLength;
+    chunkLength = B(8);     // Length without SCI. Set it to B(16) when hasSci is true.
+    uint16_t tpid;          // Tag Protocol Identifier (TPID): 16-bit field specifying an EtherType value that is used to identify the frame as a tagged frame and to select the correct tag decoding functions. 
+    uint8_t tciAn;          // @bit(8);
+    uint8_t sl;             // @byte(1);
+    uint32_t packetNumber;  // @byte(4);
+    bool hasSci = false;    // @bit(0); TODO ????
+    uint64_t sci;           // @byte(8); //TODO optional field
 }

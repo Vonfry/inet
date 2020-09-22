@@ -16,25 +16,24 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 
-import inet.common.INETDefs;
-import inet.common.packet.chunk.Chunk;
-
-cplusplus {{
+#include "inet/common/packet/dissector/ProtocolDissectorRegistry.h"
 #include "inet/common/ProtocolGroup.h"
-}}
+#include "inet/linklayer/ieee802/Ieee802EpdHeader_m.h"
+#include "inet/linklayer/ieee802/Ieee802EpdProtocolDissector.h"
 
-namespace inet;
+namespace inet {
 
-// IEEE 802.11 in 5.9 GHz band requires EtherType Protocol Discrimination (EPD)
-class Ieee80211EtherTypeHeader extends FieldsChunk
+Register_Protocol_Dissector(&Protocol::ieee802epd, Ieee802EpdProtocolDissector);
+
+void Ieee802EpdProtocolDissector::dissect(Packet *packet, const Protocol *protocol, ICallback& callback) const
 {
-    chunkLength = B(2);
-    int etherType = -1; // ~EtherType (2 bytes)
+    const auto& header = packet->popAtFront<Ieee802EpdHeader>();
+    callback.startProtocolDataUnit(&Protocol::ieee802epd);
+    callback.visitChunk(header, &Protocol::ieee802epd);
+    auto payloadProtocol = ProtocolGroup::ethertype.findProtocol(header->getEtherType());
+    callback.dissectPacket(packet, payloadProtocol);
+    callback.endProtocolDataUnit(&Protocol::ieee802epd);
 }
 
-cplusplus(Ieee80211EtherTypeHeader) {{
-    virtual const Protocol* getProtocol() const
-    {
-        return ProtocolGroup::ethertype.findProtocol(getEtherType());
-    }
-}}
+} // namespace inet
+

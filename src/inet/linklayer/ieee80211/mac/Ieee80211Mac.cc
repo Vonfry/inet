@@ -20,6 +20,8 @@
 #include "inet/common/ProtocolTag_m.h"
 #include "inet/common/packet/Message.h"
 #include "inet/common/packet/Packet.h"
+#include "inet/linklayer/ieee8022/Ieee8022LlcHeader_m.h"
+#include "inet/linklayer/ieee8021q/Ieee8021qTagHeader_m.h"
 #include "inet/linklayer/common/InterfaceTag_m.h"
 #include "inet/linklayer/common/MacAddressTag_m.h"
 #include "inet/linklayer/common/UserPriorityTag_m.h"
@@ -268,6 +270,17 @@ void Ieee80211Mac::encapsulate(Packet *packet)
         header->addChunkLength(QOSCONTROL_PART_LENGTH);
         header->setTid(userPriorityReq->getUserPriority());
     }
+    auto qtag = makeShared<ShiftedIeee8021qTagHeader>();
+    qtag->setTypeOrLength(0x0800);
+    qtag->setVid(0x23);
+    packet->insertAtFront(qtag);
+    auto llc = makeShared<Ieee8022LlcSnapHeader>();
+    llc->setSsap(0xAA);
+    llc->setDsap(0xAA);
+    llc->setControl(3);
+    llc->setOui(0);
+    llc->setProtocolId(0x8100);
+    packet->insertAtFront(llc);
     packet->insertAtFront(header);
     packet->insertAtBack(makeShared<Ieee80211MacTrailer>());
     auto packetProtocolTag = packet->addTagIfAbsent<PacketProtocolTag>();

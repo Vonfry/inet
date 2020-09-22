@@ -19,7 +19,7 @@
 #include "inet/common/ProtocolTag_m.h"
 #include "inet/linklayer/common/InterfaceTag_m.h"
 #include "inet/linklayer/common/MacAddressTag_m.h"
-#include "inet/linklayer/ethernet/EtherFrame_m.h"
+#include "inet/linklayer/ethernet/EthernetMacHeader_m.h"
 #include "inet/linklayer/ethernet/layered/EthernetAddressInserter.h"
 
 namespace inet {
@@ -35,7 +35,7 @@ void EthernetAddressInserter::initialize(int stage)
 
 void EthernetAddressInserter::processPacket(Packet *packet)
 {
-    const auto& header = makeShared<Ieee8023MacAddresses>();
+    const auto& header = makeShared<EthernetMacAddressFields>();
     auto macAddressReq = packet->getTag<MacAddressReq>();
     auto srcAddress = macAddressReq->getSrcAddress();
     auto interfaceReq = packet->getTag<InterfaceReq>();

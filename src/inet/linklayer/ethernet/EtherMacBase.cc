@@ -23,9 +23,11 @@
 #include "inet/common/packet/chunk/BytesChunk.h"
 #include "inet/common/ProtocolTag_m.h"
 #include "inet/common/StringFormat.h"
-#include "inet/linklayer/ethernet/EtherFrame_m.h"
+#include "inet/linklayer/common/EtherType_m.h"
 #include "inet/linklayer/ethernet/EtherMacBase.h"
 #include "inet/linklayer/ethernet/Ethernet.h"
+#include "inet/linklayer/ethernet/EthernetControlFrame_m.h"
+#include "inet/linklayer/ethernet/EthernetMacHeader_m.h"
 #include "inet/networklayer/common/NetworkInterface.h"
 #include "inet/physicallayer/ethernet/EthernetPhyHeader_m.h"
 #include "inet/physicallayer/ethernet/EthernetSignal_m.h"
@@ -423,7 +425,7 @@ bool EtherMacBase::verifyCrcAndLength(Packet *packet)
         default:
             throw cRuntimeError("invalid FCS mode in ethernet frame");
     }
-    if (isIeee8023Header(*ethHeader)) {
+    if (isIeee8023Length(ethHeader->getTypeOrLength())) {
         b payloadLength = B(ethHeader->getTypeOrLength());
 
         return (payloadLength <= packet->getDataLength() - (ethHeader->getChunkLength() + ethTrailer->getChunkLength()));

@@ -16,23 +16,26 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 
-#ifndef __INET_IEEE80211ETHERTYPEPROTOCOLDISSECTOR_H
-#define __INET_IEEE80211ETHERTYPEPROTOCOLDISSECTOR_H
-
-#include "inet/common/INETDefs.h"
-#include "inet/common/packet/dissector/ProtocolDissector.h"
+#include "inet/common/packet/serializer/ChunkSerializerRegistry.h"
+#include "inet/linklayer/ieee802/Ieee802EpdHeader_m.h"
+#include "inet/linklayer/ieee802/Ieee802EpdHeaderSerializer.h"
 
 namespace inet {
-namespace ieee80211 {
 
-class INET_API Ieee80211EtherTypeProtocolDissector : public ProtocolDissector
+Register_Serializer(Ieee802EpdHeader, Ieee802EpdHeaderSerializer);
+
+void Ieee802EpdHeaderSerializer::serialize(MemoryOutputStream& stream, const Ptr<const Chunk>& chunk) const
 {
-  public:
-    virtual void dissect(Packet *packet, const Protocol *protocol, ICallback& callback) const override;
-};
+    const auto& llcHeader = CHK(dynamicPtrCast<const Ieee802EpdHeader>(chunk));
+    stream.writeUint16Be(llcHeader->getEtherType());
+}
 
-} // namespace ieee80211
+const Ptr<Chunk> Ieee802EpdHeaderSerializer::deserialize(MemoryInputStream& stream) const
+{
+    Ptr<Ieee802EpdHeader> llcHeader = makeShared<Ieee802EpdHeader>();
+    llcHeader->setEtherType(stream.readUint16Be());
+    return llcHeader;
+}
+
 } // namespace inet
-
-#endif
 

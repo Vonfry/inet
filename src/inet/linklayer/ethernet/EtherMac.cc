@@ -16,19 +16,17 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
-#include <stdio.h>
-#include <string.h>
-
-
 #include "inet/common/IProtocolRegistrationListener.h"
 #include "inet/common/ProtocolTag_m.h"
+#include "inet/linklayer/common/EtherType_m.h"
 #include "inet/linklayer/common/Ieee802Ctrl.h"
 #include "inet/linklayer/common/InterfaceTag_m.h"
 #include "inet/linklayer/common/MacAddressTag_m.h"
 #include "inet/linklayer/ethernet/EtherEncap.h"
-#include "inet/linklayer/ethernet/EtherFrame_m.h"
 #include "inet/linklayer/ethernet/EtherMac.h"
 #include "inet/linklayer/ethernet/Ethernet.h"
+#include "inet/linklayer/ethernet/EthernetControlFrame_m.h"
+#include "inet/linklayer/ethernet/EthernetMacHeader_m.h"
 #include "inet/networklayer/common/NetworkInterface.h"
 #include "inet/physicallayer/ethernet/EthernetSignal_m.h"
 
@@ -572,7 +570,7 @@ void EtherMac::handleEndTxPeriod()
 
     const auto& header = currentTxFrame->peekAtFront<EthernetMacHeader>();
     if (header->getTypeOrLength() == ETHERTYPE_FLOW_CONTROL) {
-        const auto& controlFrame = currentTxFrame->peekDataAt<EthernetControlFrame>(header->getChunkLength(), b(-1));
+        const auto& controlFrame = currentTxFrame->peekDataAt<EthernetControlFrameBase>(header->getChunkLength(), b(-1));
         if (controlFrame->getOpCode() == ETHERNET_CONTROL_PAUSE) {
             const auto& pauseFrame = dynamicPtrCast<const EthernetPauseFrame>(controlFrame);
             numPauseFramesSent++;
@@ -802,7 +800,7 @@ void EtherMac::processReceivedDataFrame(Packet *packet)
 void EtherMac::processReceivedControlFrame(Packet *packet)
 {
     packet->popAtFront<EthernetMacHeader>();
-    const auto& controlFrame = packet->peekAtFront<EthernetControlFrame>();
+    const auto& controlFrame = packet->peekAtFront<EthernetControlFrameBase>();
 
     if (controlFrame->getOpCode() == ETHERNET_CONTROL_PAUSE) {
         const auto& pauseFrame = packet->peekAtFront<EthernetPauseFrame>();

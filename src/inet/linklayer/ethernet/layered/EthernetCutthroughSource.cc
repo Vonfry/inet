@@ -18,7 +18,8 @@
 #include "inet/common/ModuleAccess.h"
 #include "inet/common/ProtocolTag_m.h"
 #include "inet/linklayer/common/InterfaceTag_m.h"
-#include "inet/linklayer/ethernet/EtherFrame_m.h"
+#include "inet/linklayer/ethernet/Ethernet.h"
+#include "inet/linklayer/ethernet/EthernetMacHeader_m.h"
 #include "inet/linklayer/ethernet/layered/EthernetCutthroughSource.h"
 
 namespace inet {
@@ -40,7 +41,7 @@ void EthernetCutthroughSource::initialize(int stage)
 void EthernetCutthroughSource::handleMessage(cMessage *message)
 {
     if (message == cutthroughTimer) {
-        const auto& header = streamedPacket->peekAtFront<Ieee8023MacAddresses>();
+        const auto& header = streamedPacket->peekAtFront<EthernetMacAddressFields>();
         int interfaceId = macTable->getInterfaceIdForAddress(header->getDest());
         macTable->updateTableWithAddress(networkInterface->getInterfaceId(), header->getSrc());
         if (interfaceId != -1 && cutthroughConsumer->canPushPacket(streamedPacket, cutthroughOutputGate)) {
@@ -78,7 +79,7 @@ void EthernetCutthroughSource::pushPacketEnd(Packet *packet, cGate *gate)
     if (cutthroughInProgress) {
         Enter_Method("pushPacketEnd");
         take(packet);
-        const auto& header = packet->peekAtFront<Ieee8023MacAddresses>();
+        const auto& header = packet->peekAtFront<EthernetMacAddressFields>();
         macTable->updateTableWithAddress(networkInterface->getInterfaceId(), header->getSrc());
         int interfaceId = macTable->getInterfaceIdForAddress(header->getDest());
         packet->trim();

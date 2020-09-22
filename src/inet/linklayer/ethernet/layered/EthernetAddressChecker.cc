@@ -20,7 +20,7 @@
 #include "inet/common/ProtocolTag_m.h"
 #include "inet/linklayer/common/InterfaceTag_m.h"
 #include "inet/linklayer/common/MacAddressTag_m.h"
-#include "inet/linklayer/ethernet/EtherFrame_m.h"
+#include "inet/linklayer/ethernet/EthernetMacHeader_m.h"
 #include "inet/linklayer/ethernet/layered/EthernetAddressChecker.h"
 
 namespace inet {
@@ -39,7 +39,7 @@ void EthernetAddressChecker::initialize(int stage)
 
 void EthernetAddressChecker::processPacket(Packet *packet)
 {
-    const auto& header = packet->popAtFront<Ieee8023MacAddresses>();
+    const auto& header = packet->popAtFront<EthernetMacAddressFields>();
     auto macAddressInd = packet->addTagIfAbsent<MacAddressInd>();
     macAddressInd->setSrcAddress(header->getSrc());
     macAddressInd->setDestAddress(header->getDest());
@@ -49,7 +49,7 @@ void EthernetAddressChecker::processPacket(Packet *packet)
 
 bool EthernetAddressChecker::matchesPacket(const Packet *packet) const
 {
-    const auto& header = packet->peekAtFront<Ieee8023MacAddresses>();
+    const auto& header = packet->peekAtFront<EthernetMacAddressFields>();
     auto interfaceInd = packet->getTag<InterfaceInd>();
     auto networkInterface = interfaceTable->getInterfaceById(interfaceInd->getInterfaceId());
     return promiscuous || networkInterface->matchesMacAddress(header->getDest());
