@@ -717,14 +717,22 @@ void EtherMac::sendJamSignal()
     if (currentSendPkTreeID == 0)
         throw cRuntimeError("Model error: sending JAM while not transmitting");
 
-    // append JAM for current transmission at now
+    // abort current transmission
     ASSERT(curTxSignal != nullptr);
     simtime_t duration = simTime() - curTxSignal->getCreationTime();    //TODO save and use start tx time
     cutEthernetSignalEnd(curTxSignal, duration);    //TODO save and use start tx time
-    simtime_t jamDuration = b(JAM_SIGNAL_BYTES).get() / curEtherDescr->txrate;
-    curTxSignal->setBitError(true);
-    send(curTxSignal->dup(), SendOptions().updateTx(curTxSignal->getOrigPacketId()).duration(duration + jamDuration).remainingDuration(jamDuration), physOutGate);
-    scheduleAfter(jamDuration, endJammingTimer);
+    send(curTxSignal, SendOptions().finishTx(curTxSignal->getOrigPacketId()).duration(duration), physOutGate);
+    curTxSignal = nullptr;
+
+    // send JAM
+    EthernetJamSignal *jam = new EthernetJamSignal("JAM_SIGNAL");
+    jam->setByteLength(B(JAM_SIGNAL_BYTES).get());
+    jam->setBitrate(curEtherDescr->txrate);
+    jam->setAbortedPkTreeID(currentSendPkTreeID);
+    //emit(packetSentToLowerSignal, jam);
+    sendSignal(jam);
+
+    scheduleAt(transmissionChannel->getTransmissionFinishTime(), endJammingTimer);
     changeTransmissionState(JAMMING_STATE);
 }
 
